@@ -116,7 +116,7 @@ public class ConnectionServiceImpl implements ConnectionService {
                     countryName = CountryName.AUS.toString();
 
                 User updatedSender = connect(senderId,countryName);
-                if (!updatedSender.getConnected()){
+                if (updatedSender.getMaskedIp() == null){
                     throw new Exception("Cannot establish communication");
 
                 }
@@ -130,7 +130,7 @@ public class ConnectionServiceImpl implements ConnectionService {
             }
             String countryName = receiver.getOriginalCountry().getCountryName().toString();
             User updatedSender1 = connect(senderId,countryName);
-            if (!updatedSender1.getConnected()){
+            if (updatedSender1.getMaskedIp() == null){
                 throw new Exception("Cannot establish communication");
             }
             else return updatedSender1;
