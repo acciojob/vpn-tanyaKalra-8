@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             }
             country.setUser(user);//one to one linking
             user.setConnected(false);
-            user.setCountry(country);//one to one
+            user.setOriginalCountry(country);//one to one
 
 
             String Code=country.getCode()+"."+userRepository3.save(user).getId();
