@@ -26,49 +26,51 @@ public class ConnectionServiceImpl implements ConnectionService {
         if (user.getMaskedIp() != null){
             throw new Exception("Already connected");
         }
-        if (countryName.equalsIgnoreCase(user.getOriginalCountry().getCountryName().toString())){
+        else if (countryName.equalsIgnoreCase(user.getOriginalCountry().getCountryName().toString())){
             return user;
         }
 
-        if (user.getServiceProviderList() == null){
-            throw new Exception("Unable to connect");
-        }
+        else {
+            if (user.getServiceProviderList() == null) {
+                throw new Exception("Unable to connect");
+            }
 
-        //user can connect
-        List<ServiceProvider> serviceProviders = user.getServiceProviderList();
-        int a = Integer.MAX_VALUE;
-        ServiceProvider serviceProvider = null;
-        Country country = null;
+            //user can connect
+            List<ServiceProvider> serviceProviders = user.getServiceProviderList();
+            int a = Integer.MAX_VALUE;
+            ServiceProvider serviceProvider = null;
+            Country country = null;
 
-        for (ServiceProvider serviceProvider1: serviceProviders){
+            for (ServiceProvider serviceProvider1 : serviceProviders) {
 
-            List<Country> countryList = serviceProvider1.getCountryList();
+                List<Country> countryList = serviceProvider1.getCountryList();
 
-            for (Country country1: countryList){
-                if (countryName.equalsIgnoreCase(country1.getCountryName().toString()) && a>serviceProvider1.getId()){
-                    a=serviceProvider1.getId();
-                    serviceProvider= serviceProvider1;
-                    country=country1;
+                for (Country country1 : countryList) {
+                    if (countryName.equalsIgnoreCase(country1.getCountryName().toString()) && a > serviceProvider1.getId()) {
+                        a = serviceProvider1.getId();
+                        serviceProvider = serviceProvider1;
+                        country = country1;
+                    }
                 }
             }
-        }
-        if (serviceProvider != null){
-            Connection connection = new Connection();
-            connection.setUser(user);
-            connection.setServiceProvider(serviceProvider);
+            if (serviceProvider != null) {
+                Connection connection = new Connection();
+                connection.setUser(user);
+                connection.setServiceProvider(serviceProvider);
 
-            String cc = country.getCode();
-            int givenId = serviceProvider.getId();
-            String mask = cc+"."+givenId+"."+userId;
+                String cc = country.getCode();
+                int givenId = serviceProvider.getId();
+                String mask = cc + "." + givenId + "." + userId;
 
-            user.setConnected(true);
-            user.setMaskedIp(mask);
+                user.setConnected(true);
+                user.setMaskedIp(mask);
 
-            user.getConnectionList().add(connection);
+                user.getConnectionList().add(connection);
 
-            serviceProvider.getConnectionList().add(connection);
+                serviceProvider.getConnectionList().add(connection);
 
-            serviceProviderRepository2.save(serviceProvider);
+                serviceProviderRepository2.save(serviceProvider);
+            }
         }
         return user;
     }
@@ -77,7 +79,7 @@ public class ConnectionServiceImpl implements ConnectionService {
     public User disconnect(int userId) throws Exception {
 
         User user = userRepository2.findById(userId).get();
-        if (user.getMaskedIp() == null){
+        if (!user.getConnected()){
             throw new Exception("Already disconnected");
         }
 
@@ -116,7 +118,7 @@ public class ConnectionServiceImpl implements ConnectionService {
                     countryName = CountryName.AUS.toString();
 
                 User updatedSender = connect(senderId,countryName);
-                if (updatedSender.getMaskedIp() == null){
+                if (!updatedSender.getConnected()){
                     throw new Exception("Cannot establish communication");
 
                 }
@@ -130,7 +132,7 @@ public class ConnectionServiceImpl implements ConnectionService {
             }
             String countryName = receiver.getOriginalCountry().getCountryName().toString();
             User updatedSender1 = connect(senderId,countryName);
-            if (updatedSender1.getMaskedIp() == null){
+            if (!updatedSender1.getConnected()){
                 throw new Exception("Cannot establish communication");
             }
             else return updatedSender1;

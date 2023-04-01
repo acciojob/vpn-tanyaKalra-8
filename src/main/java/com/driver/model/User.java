@@ -32,13 +32,6 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, String originalIp, String maskedIp) {
-        this.username = username;
-        this.password = password;
-        this.originalIp = originalIp;
-        this.maskedIp = maskedIp;
-    }
-
     public int getId() {
         return id;
     }
