@@ -23,7 +23,7 @@ public class ConnectionServiceImpl implements ConnectionService {
     public User connect(int userId, String countryName) throws Exception{
 
         User user = userRepository2.findById(userId).get();
-        if (user.getConnected()){
+        if (user.getMaskedIp() != null){
             throw new Exception("Already connected");
         }
         if (countryName.equalsIgnoreCase(user.getOriginalCountry().getCountryName().toString())){
@@ -77,7 +77,7 @@ public class ConnectionServiceImpl implements ConnectionService {
     public User disconnect(int userId) throws Exception {
 
         User user = userRepository2.findById(userId).get();
-        if (!user.getConnected()){
+        if (user.getMaskedIp() == null){
             throw new Exception("Already disconnected");
         }
 
@@ -94,7 +94,7 @@ public class ConnectionServiceImpl implements ConnectionService {
         User sender = userRepository2.findById(senderId).get();
         User receiver = userRepository2.findById(receiverId).get();
 
-        if (receiver.getConnected()){
+        if (receiver.getMaskedIp() != null){
             String str = receiver.getMaskedIp();
             String cc = str.substring(0,3);
 
